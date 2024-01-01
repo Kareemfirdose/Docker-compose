@@ -1,0 +1,54 @@
+version: '3.7'
+volumes:
+ wp-data:
+networks:
+ wp-networks:
+
+services:
+db:
+container_name: mysql-db
+image: mysql:5.7
+volumes:
+- wp-data:/var/lib/mysql/
+environment:
+MYSQL_ROOT_PASSWORD: rootpassword
+MYSQL_DATABASE: wordpress
+MYSQL_USER: wp-user
+MYSQL_PASSWORD: wp-pass
+ports:
+ - 8889:3306
+networks:
+ - wp-network
+
+phpmyadmin:
+container_name: php-myadmin
+image: phypadmin/phpmyadmin
+depends_on:
+ - db
+environment:
+PMA_HOST: db
+MY_SQL_USER: wp-user
+MYSQL_PASSWORD: wp-pass
+MYSQL_ROOT_PASSWORD: rootpassword
+ports:
+ - 8001:80
+networks:
+ - wp-network
+
+wordpress:
+container_name: wordpress-site
+image: wordpress:latest
+depends_on:
+ - db
+ports:
+ - 8002:80
+environment:
+WORDPRESS_DB_USER: db
+WORDPRESS_DB_USER: wp-user
+WORDPRESS_DB_PASSWORD: wp-pass
+volumes:
+ - ./wordpress-files:/var/www/html
+networks:
+ - wp-network
+
+ 
